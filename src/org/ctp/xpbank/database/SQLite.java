@@ -1,0 +1,69 @@
+package org.ctp.xpbank.database;
+
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+
+import org.ctp.xpbank.XpBank;
+import org.ctp.xpbank.database.tables.Table;
+
+public class SQLite extends Database {
+
+	String dbname;
+
+	public ArrayList<Table> tables = new ArrayList<Table>();
+
+	public SQLite(XpBank instance) {
+		super(instance);
+
+		Table experience = new Table("xpbank", "player");
+		experience.addColumn("player", "varchar", "\"\"");
+		experience.addColumn("xp", "int", "0");
+
+		tables.add(experience);
+
+		dbname = "xpbank"; // Set the table name here e.g player_kills
+	}
+
+	// SQL creation stuff, You can leave the blow stuff untouched.
+	public Connection getSQLConnection() {
+		File dataFolder = new File(plugin.getDataFolder(), dbname + ".db");
+		if (!dataFolder.exists()) {
+			try {
+				dataFolder.createNewFile();
+			} catch (IOException e) {
+				plugin.getLogger().log(Level.SEVERE,
+						"File write error: " + dbname + ".db");
+			}
+		}
+		try {
+			if (connection != null && !connection.isClosed()) {
+				return connection;
+			}
+			Class.forName("org.sqlite.JDBC");
+			connection = DriverManager.getConnection("jdbc:sqlite:"
+					+ dataFolder);
+			return connection;
+		} catch (SQLException ex) {
+			plugin.getLogger().log(Level.SEVERE,
+					"SQLite exception on initialize", ex);
+		} catch (ClassNotFoundException ex) {
+			plugin.getLogger()
+					.log(Level.SEVERE,
+							"You need the SQLite JBDC library. Google it. Put it in /lib folder.");
+		}
+		return null;
+	}
+
+	public void load() {
+		connection = getSQLConnection();
+		for (Table t : tables) {
+			t.createTable(connection);
+		}
+		initialize();
+	}
+}

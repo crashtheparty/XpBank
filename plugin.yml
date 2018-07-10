@@ -1,0 +1,9 @@
+name: XpBank
+version: 1.0.0
+main: org.ctp.xpbank.XpBank
+commands:
+  xpopen:
+    aliases: [xpbankopen,xpbopen,openbank]
+    description: Opens the Xp Bank.
+  xpadmin:
+    description: Add or remove experience from banks.

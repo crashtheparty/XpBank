@@ -1,6 +1,7 @@
 name: XpBank
 version: 1.0.0
 main: org.ctp.xpbank.XpBank
+api-version: 1.13
 commands:
   xpopen:
     aliases: [xpbankopen,xpbopen,openbank]

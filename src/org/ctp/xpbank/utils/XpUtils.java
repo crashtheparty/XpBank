@@ -32,7 +32,7 @@ public class XpUtils {
 	 * 
 	 * @return the total experience calculated
 	 */
-	public static int getExpFromLevel(int level) {
+	private static int getExpFromLevel(int level) {
 		if (level > 30) {
 			return (int) (4.5 * level * level - 162.5 * level + 2220);
 		}
@@ -49,17 +49,25 @@ public class XpUtils {
 	 * 
 	 * @return the level calculated
 	 */
-	public static double getLevelFromExp(long exp) {
-		if (exp > 1395) {
-			return (Math.sqrt(72 * exp - 54215) + 325) / 18;
+	public static float getLevelFromExp(long exp) {
+		int i = 0;
+		float retValue = 0;
+		while(exp > 0) {
+			int expToLevel = getExpToNext(i);
+			if(exp > expToLevel) {
+				exp -= expToLevel;
+				i++;
+			}else if(exp == expToLevel) {
+				retValue = i + 1;
+				exp = 0;
+				break;
+			}else {
+				retValue = i + ((float)exp / (float)expToLevel);
+				exp = 0;
+				break;
+			}
 		}
-		if (exp > 315) {
-			return Math.sqrt(40 * exp - 7839) / 10 + 8.1;
-		}
-		if (exp > 0) {
-			return Math.sqrt(exp + 9) - 3;
-		}
-		return 0;
+		return retValue;
 	}
 
 	/**
@@ -79,28 +87,66 @@ public class XpUtils {
 		}
 		return 2 * level + 7;
 	}
+	
 	/**
-	 * Change a Player's exp.
-	 * <p>
-	 * This method should be used in place of {@link Player#giveExp(int)}, which does not properly
-	 * account for different levels requiring different amounts of experience.
-	 * 
-	 * @param player the Player affected
-	 * @param exp the amount of experience to add or remove
+	 * Modify the player's levels and return the amount to add or remove from the bank
+	 * @param player - the player
+	 * @param toChange - the amount of experience the player should have at the end
+	 * @param inBank - the amount of experience the player has in the bank
+	 * @return - the amount of experience to add to the bank
 	 */
-	public static void changeExp(Player player, int exp) {
-		exp += getExp(player);
+	public static int changeExp(Player player, int toChange, int inBank) {
+		int playerExp = getExp(player);
+		if(toChange == playerExp) return 0;
+		
+		if(toChange > playerExp) {
+			if(inBank == 0) return 0;
+			int difference = toChange - playerExp;
+			if(difference > inBank) {
+				toChange = playerExp + inBank;
+				difference = inBank;
+			}
+			float levelAndExp = getLevelFromExp(toChange);
 
-		if (exp < 0) {
-			exp = 0;
+			int level = (int) levelAndExp;
+			player.setLevel(level);
+			player.setExp((levelAndExp - level));
+			player.setTotalExperience(toChange);
+			// removing this much from the bank
+			return - difference;
+		} else {
+			int difference = playerExp - toChange;
+			float levelAndExp = getLevelFromExp(toChange);
+
+			int level = (int) levelAndExp;
+			player.setLevel(level);
+			player.setExp((levelAndExp - level));
+			player.setTotalExperience(toChange);
+			// adding this much to the bank
+			return difference;
 		}
-
-		double levelAndExp = getLevelFromExp(exp);
-
-		int level = (int) levelAndExp;
-		player.setLevel(level);
-		player.setExp((float) (levelAndExp - level));
-		player.setTotalExperience(exp);
+	}
+	
+	public static int getExpForLevel(int level) {
+		int exp = 0;
+		for(int i = 0; i < level; i++) {
+			exp += getExpToNext(i);
+		}
+		return exp;
+	}
+	
+	public static int getExpForLevel(float level) {
+		int exp = 0;
+		int levelInt = (int) level;
+		for(int i = 0; i < levelInt; i++) {
+			exp += getExpToNext(i);
+		}
+		
+		float percentLevel = level - levelInt;
+		
+		exp += (getExpToNext(levelInt) * percentLevel);
+		
+		return exp;
 	}
 
 }

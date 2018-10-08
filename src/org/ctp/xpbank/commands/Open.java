@@ -79,7 +79,6 @@ public class Open implements CommandExecutor{
 			for (int j = 1; j <= 64; j++) {
 				ItemStack rewardItem = new ItemStack(item.getType(), j);
 				rewardItem.setItemMeta(item.getItemMeta());
-				rewardItem.setDurability(item.getDurability());
 				if (player.getInventory().contains(rewardItem)) {
 					reward += j;
 				}
@@ -125,7 +124,6 @@ public class Open implements CommandExecutor{
 			for (int j = 1; j <= 64; j++) {
 				ItemStack rewardItem = new ItemStack(item.getType(), j);
 				rewardItem.setItemMeta(item.getItemMeta());
-				rewardItem.setDurability(item.getDurability());
 				if (player.getInventory().contains(rewardItem)) {
 					reward += j;
 				}

@@ -1,5 +1,5 @@
 name: XpBank
-version: 1.0.0
+version: 1.0.1
 main: org.ctp.xpbank.XpBank
 api-version: 1.13
 commands:
@@ -8,3 +8,10 @@ commands:
     description: Opens the Xp Bank.
   xpadmin:
     description: Add or remove experience from banks.
+permissions:
+  xpbank.free:
+    description: Allows players to open the bank for free
+    default: op
+  xpbank.admin:
+    description: Allows players to access the admin command
+    default: op

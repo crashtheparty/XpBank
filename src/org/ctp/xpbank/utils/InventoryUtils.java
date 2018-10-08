@@ -11,6 +11,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.ctp.xpbank.XpBank;
 
@@ -81,8 +82,8 @@ public class InventoryUtils {
 		int exp = 0;
 		for(ItemStack item : items) {
 			if(item != null && item.getItemMeta() != null) {
-				if(item.getItemMeta().hasEnchant(Enchantment.MENDING)) {
-					exp += (item.getDurability() + 1) / 2;
+				if(item.getItemMeta().hasEnchant(Enchantment.MENDING) && item.getItemMeta() instanceof Damageable) {
+					exp += (((Damageable) item.getItemMeta()).getDamage() + 1) / 2;
 				}
 			}
 		}
@@ -103,14 +104,15 @@ public class InventoryUtils {
 		
 		for(ItemStack item : items) {
 			if(item != null && item.getItemMeta() != null) {
-				if(item.getItemMeta().hasEnchant(Enchantment.MENDING)) {
-					int durability = item.getDurability();
+				if(item.getItemMeta().hasEnchant(Enchantment.MENDING) && item.getItemMeta() instanceof Damageable) {
+					Damageable meta = ((Damageable) item.getItemMeta());
+					int durability = meta.getDamage();
 					while(exp > 0 && durability > 0) {
 						durability -= 2;
 						exp--;
 					}
 					if(durability < 0) durability = 0;
-					item.setDurability((short) durability);
+					((Damageable) item.getItemMeta()).setDamage(durability);
 				}
 			}
 		}

@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
@@ -27,8 +29,11 @@ public class ItemSerialization {
 					+ item.getItemMeta().getDisplayName().replace(" ", "_")
 							.replace("§", "&");
 		}
-		if (item.getDurability() != 0) {
-			itemString = itemString + " damage@" + item.getDurability();
+		if (item.getItemMeta() instanceof Damageable) {
+			Damageable damage = (Damageable) item.getItemMeta();
+			if (damage.hasDamage()) {
+				itemString = itemString + " damage@" + damage.getDamage();
+			}
 		}
 		Map<Enchantment, Integer> isEnch = item.getEnchantments();
 		if (isEnch.size() > 0) {
@@ -68,7 +73,11 @@ public class ItemSerialization {
 				createdItemStack = Boolean.valueOf(true);
 			} else if ((itemAttribute[0].equals("damage"))
 					&& (createdItemStack.booleanValue())) {
-				is.setDurability(Short.valueOf(itemAttribute[1]).shortValue());
+				ItemMeta im = is.getItemMeta();
+				if(im instanceof Damageable) {
+					((Damageable) im).setDamage(Integer.valueOf(itemAttribute[1]).intValue());
+				}
+				is.setItemMeta(im);
 			} else if ((itemAttribute[0].equals("amount"))
 					&& (createdItemStack.booleanValue())) {
 				is.setAmount(Integer.valueOf(itemAttribute[1]).intValue());
@@ -84,6 +93,12 @@ public class ItemSerialization {
 				String[] enchString = itemAttribute[1].split("+");
 				if(enchString[0].equalsIgnoreCase("minecraft")) {
 					key = NamespacedKey.minecraft(enchString[1]);
+				} else {
+					key = new NamespacedKey(Bukkit.getPluginManager().getPlugin(enchString[0]), enchString[1]);
+				}
+				if(key == null) {
+					ChatUtils.sendToConsole(
+							"Key is null.");
 				}
 				
 				if (Enchantment.getByKey(key) != null) {

@@ -69,8 +69,8 @@ public class XpBank extends JavaPlugin {
 		db = new SQLite(this);
 		db.load();
 		
-		check = new VersionCheck(PLUGIN_VERSION, "https://raw.githubusercontent.com/crashtheparty/EnchantmentSolution/master/VersionHistory", 
-				"https://www.spigotmc.org/resources/enchantment-solution.59556/", "https://github.com/crashtheparty/EnchantmentSolution", 
+		check = new VersionCheck(PLUGIN_VERSION, "https://raw.githubusercontent.com/crashtheparty/XpBank/master/VersionHistory", 
+				"https://www.spigotmc.org/resources/xpbank.59580/", "https://github.com/crashtheparty/XpBank", 
 				CONFIG.getBoolean("get_latest_version"));
 		getServer().getPluginManager().registerEvents(check, this);
 		checkVersion();

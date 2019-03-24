@@ -83,7 +83,7 @@ public class InventoryUtils {
 		for(ItemStack item : items) {
 			if(item != null && item.getItemMeta() != null) {
 				if(item.getItemMeta().hasEnchant(Enchantment.MENDING) && item.getItemMeta() instanceof Damageable) {
-					exp += (((Damageable) item.getItemMeta()).getDamage() + 1) / 2;
+					exp += (DamageUtils.getDamage(item.getItemMeta()) + 1) / 2;
 				}
 			}
 		}
@@ -105,14 +105,13 @@ public class InventoryUtils {
 		for(ItemStack item : items) {
 			if(item != null && item.getItemMeta() != null) {
 				if(item.getItemMeta().hasEnchant(Enchantment.MENDING) && item.getItemMeta() instanceof Damageable) {
-					Damageable meta = ((Damageable) item.getItemMeta());
-					int durability = meta.getDamage();
+					int durability = DamageUtils.getDamage(item.getItemMeta());
 					while(exp > 0 && durability > 0) {
 						durability -= 2;
 						exp--;
 					}
 					if(durability < 0) durability = 0;
-					((Damageable) item.getItemMeta()).setDamage(durability);
+					DamageUtils.setDamage(item, durability);
 				}
 			}
 		}

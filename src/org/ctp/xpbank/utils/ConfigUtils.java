@@ -2,17 +2,18 @@ package org.ctp.xpbank.utils;
 
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
+import org.ctp.xpbank.utils.config.YamlConfig;
 
 public class ConfigUtils {
 	
-	private SimpleConfig config;
+	private YamlConfig config;
 	private ItemStack priceItem;
 	private double price;
-	private boolean oneTime, vault;
+	private boolean oneTime, vault, latestVersion;
 	private int accessTime;
 	private String bankName, starter;
 	
-	public ConfigUtils(SimpleConfig config) {
+	public ConfigUtils(YamlConfig config) {
 		this.config = config;
 		String priceItemString = config.getString("price_item");
 		setPriceItem(ItemSerialization.stringToItem(priceItemString));
@@ -22,6 +23,7 @@ public class ConfigUtils {
 		bankName = config.getString("bank_name");
 		starter = config.getString("starter");
 		vault = config.getBoolean("vault");
+		latestVersion = config.getBoolean("get_latest_version");
 	}
 
 	public ItemStack getPriceItem() {
@@ -88,6 +90,14 @@ public class ConfigUtils {
 		config.set("vault", econ);
 		config.saveConfig();
 		vault = econ;
+	}
+
+	public boolean checkLatestVersion() {
+		return latestVersion;
+	}
+
+	public void setCheckLatestVersion(boolean latestVersion) {
+		this.latestVersion = latestVersion;
 	}
 
 }

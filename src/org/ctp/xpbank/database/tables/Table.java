@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.ctp.xpbank.database.columns.Column;
@@ -91,10 +92,10 @@ public class Table {
 					if(!columnsInTable.contains(column.getName())){
 						String statement = "ALTER TABLE " + name + " ADD COLUMN `" + column.getName() + "` " + conversions.get(column.getType()) + " DEFAULT " + column.getDefaultValue();
 						if(column.getType().equals("autoint")) {
-							ChatUtils.sendToConsole("Can't add auto increment value to existing table: skipping.");
+							ChatUtils.sendToConsole(Level.WARNING,"Can't add auto increment value to existing table: skipping.");
 							continue;
 						}
-						ChatUtils.sendToConsole(statement);
+						ChatUtils.sendToConsole(Level.INFO, statement);
 						Statement st = connection.createStatement();
 						st.executeUpdate(statement);
 						st.close();
@@ -113,7 +114,7 @@ public class Table {
 					}else {
 						statement = statement.substring(0, statement.length() - 1) + ")";
 					}
-					ChatUtils.sendToConsole(statement);
+					ChatUtils.sendToConsole(Level.INFO, statement);
 					try{
 						Statement st = connection.createStatement();
 						st.executeUpdate(statement);
@@ -122,7 +123,7 @@ public class Table {
 						e.printStackTrace();
 					}
 				}else {
-					ChatUtils.sendToConsole("Failed to add table " + name + ": primary keys undefined.");
+					ChatUtils.sendToConsole(Level.WARNING, "Failed to add table " + name + ": primary keys undefined.");
 				}
 			}
 		}catch(SQLException ex){

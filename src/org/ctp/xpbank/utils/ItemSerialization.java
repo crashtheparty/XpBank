@@ -3,6 +3,7 @@ package org.ctp.xpbank.utils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -90,14 +91,14 @@ public class ItemSerialization {
 			} else if ((itemAttribute[0].equals("enchant"))
 					&& (createdItemStack.booleanValue())) {
 				NamespacedKey key = null;
-				String[] enchString = itemAttribute[1].split("+");
+				String[] enchString = itemAttribute[1].split("\\+");
 				if(enchString[0].equalsIgnoreCase("minecraft")) {
 					key = NamespacedKey.minecraft(enchString[1]);
 				} else {
 					key = new NamespacedKey(Bukkit.getPluginManager().getPlugin(enchString[0]), enchString[1]);
 				}
 				if(key == null) {
-					ChatUtils.sendToConsole(
+					ChatUtils.sendToConsole(Level.WARNING,
 							"Key is null.");
 				}
 				
@@ -106,10 +107,10 @@ public class ItemSerialization {
 							.getByKey(key),
 							Integer.valueOf(itemAttribute[2]).intValue());
 				} else {
-					ChatUtils.sendToConsole(
+					ChatUtils.sendToConsole(Level.WARNING,
 							"Wrong enchantment name: "
 									+ itemAttribute[1]);
-					ChatUtils.sendToConsole(
+					ChatUtils.sendToConsole(Level.WARNING,
 							"Please fix the name in config!");
 				}
 			} else if ((itemAttribute[0].equals("lore"))

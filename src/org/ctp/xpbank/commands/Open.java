@@ -11,7 +11,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.ctp.xpbank.XpBank;
 import org.ctp.xpbank.threads.OpenTime;
@@ -29,6 +28,7 @@ public class Open implements CommandExecutor{
 		if(sender instanceof Player){
 			ConfigUtils utils = XpBank.getConfigUtils();
 			Player player = (Player) sender;
+			player.closeInventory();
 			if (!openedForFree(player)) {
 				if(utils.isOneTime()) {
 					oneTime(player);
@@ -36,8 +36,7 @@ public class Open implements CommandExecutor{
 					timedAccess(player);
 				}
 			} else {
-				Inventory inv = InventoryUtils.createXpBank(player);
-				player.openInventory(inv);
+				InventoryUtils.addInventory(player);
 			}
 		}
 		return false;
@@ -54,7 +53,6 @@ public class Open implements CommandExecutor{
 		}
 		if(player.hasPermission("xpbank.free")) {
 			ChatUtils.sendMessage(player, "Opening account for free.");
-			player.openInventory(InventoryUtils.createXpBank(player));
 			return true;
 		}
 		return false;
@@ -67,9 +65,8 @@ public class Open implements CommandExecutor{
 			double price = utils.getPrice();
 			if(econ.getBalance(player) >= price){
 				econ.withdrawPlayer(player, price);
-				Inventory inv = InventoryUtils.createXpBank(player);
 				ChatUtils.sendMessage(player, "Spent " + price + " to unlock your account.");
-				player.openInventory(inv);
+				InventoryUtils.addInventory(player);
 			}else{
 				ChatUtils.sendMessage(player, "You do not have enough money to unlock your account. Must have " + price + ".");
 			}
@@ -86,7 +83,7 @@ public class Open implements CommandExecutor{
 			if(reward >= item.getAmount()){
 				player.getInventory().removeItem(item);
 				ChatUtils.sendMessage(player, "Spent " + item.toString().replace(ChatColor.COLOR_CHAR, '&') + " to unlock your account.");
-				player.openInventory(InventoryUtils.createXpBank(player));
+				InventoryUtils.addInventory(player);
 			}else{
 				ChatUtils.sendMessage(player, "You do not have the items to unlock your account: " + item.toString().replace(ChatColor.COLOR_CHAR, '&') + ".");
 			}
@@ -99,7 +96,7 @@ public class Open implements CommandExecutor{
 			OpenTime access = ACCESS.get(player.getUniqueId().toString());
 			ChatUtils.sendMessage(player, "Opening account for free.");
 			ChatUtils.sendMessage(player, "Account will lock again in " + access.getRunTime() + " seconds.");
-			player.openInventory(InventoryUtils.createXpBank(player));
+			InventoryUtils.addInventory(player);
 			return;
 		}
 		if(utils.usingEconomy()){
@@ -111,10 +108,9 @@ public class Open implements CommandExecutor{
 				access.setScheduler(scheduler);
 				ACCESS.put(player.getUniqueId().toString(), access);
 				econ.withdrawPlayer(player, price);
-				Inventory inv = InventoryUtils.createXpBank(player);
 				ChatUtils.sendMessage(player, "Spent " + price + " to unlock your account.");
 				ChatUtils.sendMessage(player, "Your account will be locked again in " + utils.getAccessTime() + " seconds.");
-				player.openInventory(inv);
+				InventoryUtils.addInventory(player);
 			}else{
 				ChatUtils.sendMessage(player, "You do not have enough money to unlock your account. Must have " + price + ".");
 			}
@@ -136,7 +132,7 @@ public class Open implements CommandExecutor{
 				player.getInventory().removeItem(item);
 				ChatUtils.sendMessage(player, "Spent " + item.toString().replace(ChatColor.COLOR_CHAR, '&') + " to unlock your account.");
 				ChatUtils.sendMessage(player, "Your account will be locked again in " + utils.getAccessTime() + " seconds.");
-				player.openInventory(InventoryUtils.createXpBank(player));
+				InventoryUtils.addInventory(player);
 			}else{
 				ChatUtils.sendMessage(player, "You do not have the items to unlock your account: " + item.toString().replace(ChatColor.COLOR_CHAR, '&') + ".");
 			}

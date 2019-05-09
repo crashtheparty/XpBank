@@ -18,6 +18,7 @@ import org.ctp.xpbank.commands.Admin;
 import org.ctp.xpbank.commands.Open;
 import org.ctp.xpbank.database.SQLite;
 import org.ctp.xpbank.listeners.InventoryClick;
+import org.ctp.xpbank.listeners.InventoryClose;
 import org.ctp.xpbank.listeners.VersionCheck;
 import org.ctp.xpbank.utils.ConfigUtils;
 import org.ctp.xpbank.utils.ItemSerialization;
@@ -39,6 +40,16 @@ public class XpBank extends JavaPlugin {
 		PLUGIN = this;
 		PLUGIN_VERSION = new PluginVersion(this, getDescription().getVersion());
 		File file = new File(getDataFolder() + "/config.yml");
+		try {
+			if (!getDataFolder().exists()) {
+				getDataFolder().mkdirs();
+			}
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
 		YamlConfiguration.loadConfiguration(file);
 		CONFIG = new YamlConfig(file, null);
 		
@@ -59,6 +70,7 @@ public class XpBank extends JavaPlugin {
 		getCommand("xpadmin").setExecutor(new Admin());
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(new InventoryClick(), this);
+		pm.registerEvents(new InventoryClose(), this);
 		CONFIG_UTILS = new ConfigUtils(CONFIG);
 		if(CONFIG_UTILS.usingEconomy() && ECON == null) {
 			CONFIG.set("vault", false);
@@ -74,6 +86,7 @@ public class XpBank extends JavaPlugin {
 				CONFIG.getBoolean("get_latest_version"));
 		getServer().getPluginManager().registerEvents(check, this);
 		checkVersion();
+		
 	}
 
 	public boolean hasVault() {

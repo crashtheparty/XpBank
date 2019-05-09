@@ -1,5 +1,5 @@
 name: XpBank
-version: 1.0.2
+version: 1.0.3
 main: org.ctp.xpbank.XpBank
 api-version: 1.13
 commands:

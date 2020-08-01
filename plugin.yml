@@ -1,13 +1,17 @@
 name: XpBank
-version: 1.0.3
+version: 1.1.0
 main: org.ctp.xpbank.XpBank
 api-version: 1.13
+depend: [CrashAPI]
 commands:
+  xpbank:
+    description: Main command of XpBank.
   xpopen:
-    aliases: [xpbankopen,xpbopen,openbank]
-    description: Opens the Xp Bank.
+    description: Opens the Experience Bank.
   xpadmin:
     description: Add or remove experience from banks.
+  xphelp:
+    description: Get help for commands.
 permissions:
   xpbank.free:
     description: Allows players to open the bank for free
@@ -15,3 +19,9 @@ permissions:
   xpbank.admin:
     description: Allows players to access the admin command
     default: op
+  xpbank.open:
+    description: Allows players to access the open command
+    default: true
+  xpbank.help:
+    description: Allows players to access the help command
+    default: true

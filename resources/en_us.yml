@@ -1,0 +1,107 @@
+starter: '&8[&dXpBank&8]'
+
+bank:
+    name: '&9Experience Bank'
+
+commands:
+    no_permission: 'You do not have permission to use this command.'
+    no_console: 'You cannot run this command from the console.'
+    invalid_player: 'Not a valid player: %player%.'
+    specify_number: 'You must specify a player.'
+    invalid_number: 'Not a valid number: %num%.'
+    specify_number: 'You must specify an amount.'
+    invalid_subcommand: 'Not a valid subcommand: %string%.'
+    specify_subcommand: 'Specify a subcommand (add, remove, setpriceitem, setprice, toggleonetime, setaccesstime, togglevault).'
+    aliases: 
+        xpopen: 
+        - 'open'
+        - 'exp'
+        - 'experienceopen'
+
+        xpadmin: 
+        - 'xpadmin'
+        - 'expadmin'
+
+        xphelp: 
+        - 'exp'
+        - 'helpxp'
+        - 'helpexp'
+
+    descriptions: 
+        csopen: 'Opens cold storage for the user.'
+        csadmin: 'Opens an editing inventory for administration purposes.'
+        cschest: 'Allows the player to set an import/export chest.'
+        csreload: 'Reloads the plugin.'
+        cshelp: 'Details the commands.'
+    usage: 
+        csopen: 
+            main: 'Usage: %usage%\nAliases: %aliases%'
+            string: 'csopen'
+        csadmin: 
+            main: 'Usage: %usage%\nAliases: %aliases%'
+            string: 'csadmin'
+        cschest: 
+            main: 'Usage: %usage%\nAliases: %aliases%'
+            string: 'cschest'
+        csreload: 
+            main: 'Usage: %usage%\nAliases: %aliases%'
+            string: 'csreload'
+        cshelp: 
+            main: 'Usage: %usage%\nAliases: %aliases%'
+            string: 'cshelp'
+    help:
+        commands_page: '&bCommands Page %page%'
+        commands_info_shrink: '&f: %description%'
+open:
+    account: 
+        open: 'Opening your account.'
+        free: 'Opening account for free.'
+    paid_account:
+        vault: 'Spent %price% to unlock your account.'
+        item: 'Spent %item% to unlock your account.'
+    invalid_funds: 
+        vault: 'You do not have enough money to unlock your account. Must have %price%.'
+        item: 'You do not have the items to unlock your account: %item%.'
+    account_lock:
+        open: 'Opening account for free.'
+        start_lock: 'Your account will be locked again in %num% seconds.'
+        continue_lock: 'Account will lock again in %num% seconds.'
+        end_lock: 'Your account has been locked.'
+admin:
+    account:
+        add_self: 'Added %num% experience to your account.'
+        remove_self: 'Removed %num% experience from your account.'
+        add_other: 'Added %num% experience to %player%''s account.'
+        remove_other: 'Removed %num% experience from %player%''s account.'
+    price:
+        item_set: 'Set the item price to your hand.'
+        item_set_null: 'You cannot set the item to null.'
+        invalid_price: 'Not a valid price: %price%.'
+        set: 'Set the price to %price%.'
+        specify_price: 'You must specify a price.'
+    one_time_toggle: 'Toggled one time to %time%.'
+    timed_access:
+        invalid: 'Not a valid access time: %time%.'
+        set: 'Set the access time to %num%.'
+        specify: 'You must specify an access time.'
+    vault:
+        toggle: 'Toggled vault to %vault%.'
+        no_economy: 'No economy plugin found.'
+        
+inventory:
+    total_exp: '&6Experience: &3%exp%'
+    add_one_level: '&aAdd 1 Level to Bank'
+    add_ten_levels: '&aAdd 10 Levels to Bank'
+    add_all_levels: '&aAdd All Levels to Bank'
+    take_one_level: '&aTake 1 Level to Bank'
+    take_ten_levels: '&aTake 10 Levels to Bank'
+    take_all_levels: '&aTake All Levels to Bank'
+    mending: '&9Mending'
+    mending_cost: 
+    - 'Cost: %cost%'
+    fail_mending: '&cNo XP in %bank%&c! No items repaired.'
+    partial_mending: '&cNot enough XP in %bank%&c! Some items repaired.'
+    full_mending: '&fMended all mendable items with %bank%&f XP!'
+    no_mending: '&fNo mendable items or all items repaired!'
+    add: '&fAdded %num% experience to %bank%&f.'
+    take: '&fTaken %num% experience from %bank%&f.'

@@ -1,98 +1,97 @@
 package org.ctp.xpbank.inventories;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.ctp.crashapi.inventory.InventoryData;
+import org.ctp.crashapi.utils.ChatUtils;
+import org.ctp.crashapi.utils.DamageUtils;
+import org.ctp.crashapi.utils.ItemUtils;
+import org.ctp.xpbank.Chatable;
 import org.ctp.xpbank.XpBank;
-import org.ctp.xpbank.utils.DamageUtils;
+import org.ctp.xpbank.utils.DBUtils;
 
-public class ExperienceInventory {
+public class ExperienceInventory implements InventoryData, Chatable {
 	
-	private OfflinePlayer player, admin;
-	private Player show;
+	private OfflinePlayer editing;
+	private Player player;
 	private Inventory inventory;
 	private boolean opening = true;
 	
-	public ExperienceInventory(OfflinePlayer player) {
+	public ExperienceInventory(Player player) {
 		this.player = player;
-		if(this.player instanceof Player) {
-			setShow((Player) this.player); 
-		}
+		editing = player;
 	}
 	
-	public ExperienceInventory(OfflinePlayer player, OfflinePlayer admin) {
+	public ExperienceInventory(Player player, OfflinePlayer editing) {
 		this.player = player;
-		this.admin = admin;
-		if(this.admin instanceof Player) {
-			setShow((Player) this.admin); 
-		}
+		this.editing = editing;
 	}
 
-	public void openInventory() {
-		Inventory inv = Bukkit.createInventory(null, 27, XpBank.getConfigUtils().getTranslatedBankName());
+	@Override
+	public void setInventory() {
+		Inventory inv = Bukkit.createInventory(null, 27, getChat().getMessage(new HashMap<String, Object>(), "bank.name"));
 				
-		if(inventory == null) {
-			inventory = inv;
-			show.openInventory(inv);
-		} else {
-			inv = show.getOpenInventory().getTopInventory();
-			inventory = inv;
-		}
+		inv = open(inv);
 		
-		int totalExp = XpBank.db.getInteger("xpbank", player.getUniqueId().toString(), "xp");
+		int totalExp = DBUtils.getExperience(editing);
 		ItemStack total = new ItemStack(Material.EXPERIENCE_BOTTLE);
 		ItemMeta totalMeta = total.getItemMeta();
-		totalMeta.setDisplayName(ChatColor.GOLD + "Experience: " + ChatColor.DARK_AQUA + "" + totalExp);
+		HashMap<String, Object> codes = new HashMap<String, Object>();
+		codes.put("%exp%", totalExp);
+		totalMeta.setDisplayName(getChat().getMessage(codes, "inventory.total_exp"));
 		total.setItemMeta(totalMeta);
 		inv.setItem(4, total);
 		ItemStack addOne = new ItemStack(Material.EXPERIENCE_BOTTLE);
 		ItemMeta addOneMeta = addOne.getItemMeta();
-		addOneMeta.setDisplayName(ChatColor.GREEN + "Add 1 Level to Bank");
+		addOneMeta.setDisplayName(getChat().getMessage(ChatUtils.getCodes(), "inventory.add_one_level"));
 		addOne.setItemMeta(addOneMeta);
 		inv.setItem(9, addOne);
 		ItemStack addTen = new ItemStack(Material.EXPERIENCE_BOTTLE);
 		ItemMeta addTenMeta = addTen.getItemMeta();
-		addTenMeta.setDisplayName(ChatColor.GREEN + "Add 10 Levels to Bank");
+		addTenMeta.setDisplayName(getChat().getMessage(ChatUtils.getCodes(), "inventory.add_ten_levels"));
 		addTen.setItemMeta(addTenMeta);
 		inv.setItem(10, addTen);
 		ItemStack addAll = new ItemStack(Material.EXPERIENCE_BOTTLE);
 		ItemMeta addAllMeta = addAll.getItemMeta();
-		addAllMeta.setDisplayName(ChatColor.GREEN + "Add All Levels to Bank");
+		addAllMeta.setDisplayName(getChat().getMessage(ChatUtils.getCodes(), "inventory.add_all_levels"));
 		addAll.setItemMeta(addAllMeta);
 		inv.setItem(11, addAll);
 		
 		ItemStack removeOne = new ItemStack(Material.EXPERIENCE_BOTTLE);
 		ItemMeta removeOneMeta = removeOne.getItemMeta();
-		removeOneMeta.setDisplayName(ChatColor.RED + "Take 1 Level from Bank");
+		removeOneMeta.setDisplayName(getChat().getMessage(ChatUtils.getCodes(), "inventory.take_one_level"));
 		removeOne.setItemMeta(removeOneMeta);
 		inv.setItem(15, removeOne);
 		ItemStack removeTen = new ItemStack(Material.EXPERIENCE_BOTTLE);
 		ItemMeta removeTenMeta = removeTen.getItemMeta();
-		removeTenMeta.setDisplayName(ChatColor.RED + "Take 10 Levels from Bank");
+		removeTenMeta.setDisplayName(getChat().getMessage(ChatUtils.getCodes(), "inventory.take_ten_levels"));
 		removeTen.setItemMeta(removeTenMeta);
 		inv.setItem(16, removeTen);
 		ItemStack removeAll = new ItemStack(Material.EXPERIENCE_BOTTLE);
 		ItemMeta removeAllMeta = removeAll.getItemMeta();
-		removeAllMeta.setDisplayName(ChatColor.RED + "Take All Levels from Bank");
+		removeAllMeta.setDisplayName(getChat().getMessage(ChatUtils.getCodes(), "inventory.take_all_levels"));
 		removeAll.setItemMeta(removeAllMeta);
 		inv.setItem(17, removeAll);
-		if(player.equals(show) && show.hasPermission("xpbank.mending")) {
+		if(player.equals(editing) && player.hasPermission("xpbank.mending")) {
 			ItemStack mend = new ItemStack(Material.ENCHANTED_BOOK);
 			ItemMeta mendMeta = mend.getItemMeta();
 			mendMeta.addEnchant(Enchantment.MENDING, 1, false);
-			mendMeta.setDisplayName(ChatColor.BLUE + "Mend Items");
-			mendMeta.setLore(Arrays.asList("Cost: " + getExperienceToMend(show)));
+			mendMeta.setDisplayName(getChat().getMessage(ChatUtils.getCodes(), "inventory.mending"));
+			HashMap<String, Object> costCodes = new HashMap<String, Object>();
+			costCodes.put("%cost%", getExperienceToMend(player));
+			mendMeta.setLore(getChat().getMessages(costCodes, "inventory.mending_cost"));
 			mend.setItemMeta(mendMeta);
 			inv.setItem(22, mend);
 		}
@@ -102,22 +101,14 @@ public class ExperienceInventory {
 	public int getExperienceToMend(Player player) {
 		List<ItemStack> items = new ArrayList<ItemStack>();
 		ItemStack[] armor = player.getInventory().getArmorContents();
-		for(int i = 0; i < armor.length; i++) {
-			if(armor[i] != null) {
-				items.add(armor[i]);
-			}
-		}
+		for(int i = 0; i < armor.length; i++)
+			if(armor[i] != null) items.add(armor[i]);
 		items.add(player.getInventory().getItemInMainHand());
 		items.add(player.getInventory().getItemInOffHand());
 		
 		int exp = 0;
-		for(ItemStack item : items) {
-			if(item != null && item.getItemMeta() != null) {
-				if(item.getItemMeta().hasEnchant(Enchantment.MENDING) && item.getItemMeta() instanceof Damageable) {
-					exp += (DamageUtils.getDamage(item.getItemMeta()) + 1) / 2;
-				}
-			}
-		}
+		for(ItemStack item : items)
+			if(item != null && item.getItemMeta() != null) if(item.getItemMeta().hasEnchant(Enchantment.MENDING) && item.getItemMeta() instanceof Damageable) exp += (DamageUtils.getDamage(item) + 1) / 2;
 		
 		return exp;
 	}
@@ -125,40 +116,87 @@ public class ExperienceInventory {
 	public int mendItems(Player player, int exp) {
 		List<ItemStack> items = new ArrayList<ItemStack>();
 		ItemStack[] armor = player.getInventory().getArmorContents();
-		for(int i = 0; i < armor.length; i++) {
-			if(armor[i] != null) {
-				items.add(armor[i]);
-			}
-		}
+		for(int i = 0; i < armor.length; i++)
+			if(armor[i] != null) items.add(armor[i]);
 		items.add(player.getInventory().getItemInMainHand());
 		items.add(player.getInventory().getItemInOffHand());
 		
-		for(ItemStack item : items) {
-			if(item != null && item.getItemMeta() != null) {
-				if(item.getItemMeta().hasEnchant(Enchantment.MENDING) && item.getItemMeta() instanceof Damageable) {
-					int durability = DamageUtils.getDamage(item.getItemMeta());
-					while(exp > 0 && durability > 0) {
-						durability -= 2;
-						exp--;
-					}
-					if(durability < 0) durability = 0;
-					DamageUtils.setDamage(item, durability);
+		for(ItemStack item : items)
+			if(item != null && item.getItemMeta() != null) if(item.getItemMeta().hasEnchant(Enchantment.MENDING) && item.getItemMeta() instanceof Damageable) {
+				int durability = DamageUtils.getDamage(item);
+				while(exp > 0 && durability > 0) {
+					durability -= 2;
+					exp--;
 				}
+				if(durability < 0) durability = 0;
+				DamageUtils.setDamage(item, durability);
 			}
-		}
 		
 		return exp;
 	}
 
-	public Player getShow() {
-		return show;
-	}
-
-	private void setShow(Player show) {
-		this.show = show;
-	}
-
 	public boolean isOpening() {
 		return opening;
+	}
+
+	@Override
+	public Inventory open(Inventory inv) {
+		opening = true;
+		if (inventory == null) {
+			inventory = inv;
+			player.openInventory(inv);
+		} else if (inv.getSize() == inventory.getSize()) {
+			inv = player.getOpenInventory().getTopInventory();
+			inventory = inv;
+		} else {
+			inventory = inv;
+			player.openInventory(inv);
+		}
+		for(int i = 0; i < inventory.getSize(); i++)
+			inventory.setItem(i, new ItemStack(Material.AIR));
+		if (opening) opening = false;
+		return inv;
+	}
+
+	@Override
+	public void close(boolean external) {
+		if (XpBank.getPlugin().hasInventory(this)) {
+			if (getItems() != null) for(ItemStack item: getItems())
+				ItemUtils.giveItemToPlayer(player, item, player.getLocation(), false);
+			XpBank.getPlugin().removeInventory(this);
+			if (!external) player.getOpenInventory().close();
+		}
+	}
+
+	@Override
+	public Block getBlock() {
+		return null;
+	}
+
+	@Override
+	public Inventory getInventory() {
+		return inventory;
+	}
+
+	@Override
+	public List<ItemStack> getItems() {
+		return null;
+	}
+
+	@Override
+	public Player getPlayer() {
+		return player;
+	}
+
+	@Override
+	public void setInventory(List<ItemStack> arg0) {
+		setInventory();
+	}
+
+	@Override
+	public void setItemName(String arg0) {}
+
+	public OfflinePlayer getEditing() {
+		return editing;
 	}
 }

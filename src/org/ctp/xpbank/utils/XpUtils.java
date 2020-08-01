@@ -33,12 +33,8 @@ public class XpUtils {
 	 * @return the total experience calculated
 	 */
 	private static int getExpFromLevel(int level) {
-		if (level > 30) {
-			return (int) (4.5 * level * level - 162.5 * level + 2220);
-		}
-		if (level > 15) {
-			return (int) (2.5 * level * level - 40.5 * level + 360);
-		}
+		if (level > 30) return (int) (4.5 * level * level - 162.5 * level + 2220);
+		if (level > 15) return (int) (2.5 * level * level - 40.5 * level + 360);
 		return level * level + 6 * level;
 	}
 
@@ -79,12 +75,8 @@ public class XpUtils {
 	 *                        9[Current Level] - 158 (at level 31+)"
 	 */
 	public static int getExpToNext(int level) {
-		if (level > 30) {
-			return 9 * level - 158;
-		}
-		if (level > 15) {
-			return 5 * level - 38;
-		}
+		if (level > 30) return 9 * level - 158;
+		if (level > 15) return 5 * level - 38;
 		return 2 * level + 7;
 	}
 	
@@ -129,18 +121,16 @@ public class XpUtils {
 	
 	public static int getExpForLevel(int level) {
 		int exp = 0;
-		for(int i = 0; i < level; i++) {
+		for(int i = 0; i < level; i++)
 			exp += getExpToNext(i);
-		}
 		return exp;
 	}
 	
 	public static int getExpForLevel(float level) {
 		int exp = 0;
 		int levelInt = (int) level;
-		for(int i = 0; i < levelInt; i++) {
+		for(int i = 0; i < levelInt; i++)
 			exp += getExpToNext(i);
-		}
 		
 		float percentLevel = level - levelInt;
 		

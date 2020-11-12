@@ -1,5 +1,5 @@
 name: XpBank
-version: 1.1.0
+version: 1.1.1
 main: org.ctp.xpbank.XpBank
 api-version: 1.13
 depend: [CrashAPI]

@@ -5,16 +5,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.command.CommandSender;
-import org.ctp.crashapi.api.LanguageConfiguration;
 import org.ctp.crashapi.config.CrashConfigurations;
 import org.ctp.crashapi.config.Language;
 import org.ctp.crashapi.db.BackupDB;
 import org.ctp.xpbank.XpBank;
+import org.ctp.xpbank.utils.config.LanguageConfiguration;
 import org.ctp.xpbank.utils.config.MainConfiguration;
 import org.ctp.xpbank.utils.config.XpLanguageFile;
 
 public class Configurations implements CrashConfigurations {
 
+	private static boolean INITIALIZING = true;
 	private final static Configurations CONFIGURATIONS = new Configurations();
 	private MainConfiguration CONFIG;
 	private LanguageConfiguration LANGUAGE;
@@ -57,7 +58,7 @@ public class Configurations implements CrashConfigurations {
 			if (file.getLanguage() == lang) LANGUAGE = new LanguageConfiguration(dataFolder, languageFile, file, db);
 
 		if (LANGUAGE == null) LANGUAGE = new LanguageConfiguration(dataFolder, languageFile, LANGUAGE_FILES.get(0), db);
-
+		INITIALIZING = false;
 		save();
 	}
 
@@ -86,6 +87,10 @@ public class Configurations implements CrashConfigurations {
 
 	public LanguageConfiguration getLanguageConfig() {
 		return LANGUAGE;
+	}
+
+	public static boolean isInitializing() {
+		return INITIALIZING;
 	}
 
 }

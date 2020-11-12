@@ -23,17 +23,17 @@ import org.ctp.xpbank.XpBank;
 import org.ctp.xpbank.utils.DBUtils;
 
 public class ExperienceInventory implements InventoryData, Chatable {
-	
+
 	private OfflinePlayer editing;
 	private Player player;
 	private Inventory inventory;
 	private boolean opening = true;
-	
+
 	public ExperienceInventory(Player player) {
 		this.player = player;
 		editing = player;
 	}
-	
+
 	public ExperienceInventory(Player player, OfflinePlayer editing) {
 		this.player = player;
 		this.editing = editing;
@@ -42,9 +42,9 @@ public class ExperienceInventory implements InventoryData, Chatable {
 	@Override
 	public void setInventory() {
 		Inventory inv = Bukkit.createInventory(null, 27, getChat().getMessage(new HashMap<String, Object>(), "bank.name"));
-				
+
 		inv = open(inv);
-		
+
 		int totalExp = DBUtils.getExperience(editing);
 		ItemStack total = new ItemStack(Material.EXPERIENCE_BOTTLE);
 		ItemMeta totalMeta = total.getItemMeta();
@@ -68,7 +68,7 @@ public class ExperienceInventory implements InventoryData, Chatable {
 		addAllMeta.setDisplayName(getChat().getMessage(ChatUtils.getCodes(), "inventory.add_all_levels"));
 		addAll.setItemMeta(addAllMeta);
 		inv.setItem(11, addAll);
-		
+
 		ItemStack removeOne = new ItemStack(Material.EXPERIENCE_BOTTLE);
 		ItemMeta removeOneMeta = removeOne.getItemMeta();
 		removeOneMeta.setDisplayName(getChat().getMessage(ChatUtils.getCodes(), "inventory.take_one_level"));
@@ -84,7 +84,7 @@ public class ExperienceInventory implements InventoryData, Chatable {
 		removeAllMeta.setDisplayName(getChat().getMessage(ChatUtils.getCodes(), "inventory.take_all_levels"));
 		removeAll.setItemMeta(removeAllMeta);
 		inv.setItem(17, removeAll);
-		if(player.equals(editing) && player.hasPermission("xpbank.mending")) {
+		if (player.equals(editing) && player.hasPermission("xpbank.mending")) {
 			ItemStack mend = new ItemStack(Material.ENCHANTED_BOOK);
 			ItemMeta mendMeta = mend.getItemMeta();
 			mendMeta.addEnchant(Enchantment.MENDING, 1, false);
@@ -97,41 +97,41 @@ public class ExperienceInventory implements InventoryData, Chatable {
 		}
 		opening = false;
 	}
-	
+
 	public int getExperienceToMend(Player player) {
 		List<ItemStack> items = new ArrayList<ItemStack>();
 		ItemStack[] armor = player.getInventory().getArmorContents();
 		for(int i = 0; i < armor.length; i++)
-			if(armor[i] != null) items.add(armor[i]);
+			if (armor[i] != null) items.add(armor[i]);
 		items.add(player.getInventory().getItemInMainHand());
 		items.add(player.getInventory().getItemInOffHand());
-		
+
 		int exp = 0;
-		for(ItemStack item : items)
-			if(item != null && item.getItemMeta() != null) if(item.getItemMeta().hasEnchant(Enchantment.MENDING) && item.getItemMeta() instanceof Damageable) exp += (DamageUtils.getDamage(item) + 1) / 2;
-		
+		for(ItemStack item: items)
+			if (item != null && item.getItemMeta() != null) if (item.getItemMeta().hasEnchant(Enchantment.MENDING) && item.getItemMeta() instanceof Damageable) exp += (DamageUtils.getDamage(item) + 1) / 2;
+
 		return exp;
 	}
-	
+
 	public int mendItems(Player player, int exp) {
 		List<ItemStack> items = new ArrayList<ItemStack>();
 		ItemStack[] armor = player.getInventory().getArmorContents();
 		for(int i = 0; i < armor.length; i++)
-			if(armor[i] != null) items.add(armor[i]);
+			if (armor[i] != null) items.add(armor[i]);
 		items.add(player.getInventory().getItemInMainHand());
 		items.add(player.getInventory().getItemInOffHand());
-		
-		for(ItemStack item : items)
-			if(item != null && item.getItemMeta() != null) if(item.getItemMeta().hasEnchant(Enchantment.MENDING) && item.getItemMeta() instanceof Damageable) {
+
+		for(ItemStack item: items)
+			if (item != null && item.getItemMeta() != null) if (item.getItemMeta().hasEnchant(Enchantment.MENDING) && item.getItemMeta() instanceof Damageable) {
 				int durability = DamageUtils.getDamage(item);
-				while(exp > 0 && durability > 0) {
+				while (exp > 0 && durability > 0) {
 					durability -= 2;
 					exp--;
 				}
-				if(durability < 0) durability = 0;
+				if (durability < 0) durability = 0;
 				DamageUtils.setDamage(item, durability);
 			}
-		
+
 		return exp;
 	}
 

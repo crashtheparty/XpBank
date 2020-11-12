@@ -11,5 +11,5 @@ public interface Chatable {
 	public static ChatUtils get() {
 		return XpBank.getPlugin().getChat();
 	}
-	
+
 }

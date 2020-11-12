@@ -12,7 +12,7 @@ public class XpLanguageFile extends CrashLanguageFile {
 	public XpLanguageFile(File dataFolder, Language language) {
 		super(dataFolder, language);
 		File tempFile = CrashConfigUtils.getTempFile(this.getClass(), "/resources/" + language.getLocale() + ".yml");
-		
+
 		YamlConfig config = getConfig();
 		config.getFromConfig();
 

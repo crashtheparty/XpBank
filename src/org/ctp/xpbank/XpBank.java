@@ -37,7 +37,6 @@ public class XpBank extends CrashAPIPlugin {
 	private PluginVersion pluginVersion;
 	private List<InventoryData> inventories = new ArrayList<InventoryData>();
 	private VersionCheck check;
-	private boolean initializing = true;
 
 	@Override
 	public void onEnable() {
@@ -50,7 +49,7 @@ public class XpBank extends CrashAPIPlugin {
 
 		configurations = Configurations.getConfigurations();
 		configurations.onEnable();
-		
+
 		XpBankCommand c = new XpBankCommand();
 		getCommand("XpBank").setExecutor(c);
 		getCommand("XpBank").setTabCompleter(c);
@@ -68,35 +67,32 @@ public class XpBank extends CrashAPIPlugin {
 		pm.registerEvents(new InventoryClose(), this);
 		DB = new XpDatabase(this);
 		DB.load();
-		
-		check = new VersionCheck(pluginVersion, "https://raw.githubusercontent.com/crashtheparty/XpBank/master/VersionHistory", 
-				"https://www.spigotmc.org/resources/xpbank.59580/", "https://github.com/crashtheparty/XpBank", 
-				getConfigurations().getConfig().getBoolean("get_latest_version"), false);
+
+		check = new VersionCheck(pluginVersion, "https://raw.githubusercontent.com/crashtheparty/XpBank/master/VersionHistory", "https://www.spigotmc.org/resources/xpbank.59580/", "https://github.com/crashtheparty/XpBank", getConfigurations().getConfig().getBoolean("get_latest_version"), false);
 		getServer().getPluginManager().registerEvents(check, this);
 		checkVersion();
-		
+
 	}
-	
+
 	public static XpBank getPlugin() {
 		return PLUGIN;
 	}
 
 	public boolean hasVault() {
-		if(!Bukkit.getPluginManager().isPluginEnabled("Vault")) return false;
-		RegisteredServiceProvider<Economy> rsp = getServer()
-				.getServicesManager().getRegistration(Economy.class);
+		if (!Bukkit.getPluginManager().isPluginEnabled("Vault")) return false;
+		RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
 		if (rsp == null) return false;
 		ECON = rsp.getProvider();
 		return ECON != null;
 	}
-	
+
 	public static Economy getEconomy() {
 		return ECON;
 	}
-	
-	private void checkVersion(){
+
+	private void checkVersion() {
 		Bukkit.getScheduler().runTaskTimerAsynchronously(PLUGIN, check, 20l, 20 * 60 * 60 * 4l);
-    }
+	}
 
 	@Override
 	public PluginVersion getPluginVersion() {
@@ -126,11 +122,6 @@ public class XpBank extends CrashAPIPlugin {
 	@Override
 	public String getStarter() {
 		return getLanguageFile().getString("starter");
-	}
-
-	@Override
-	public boolean isInitializing() {
-		return initializing;
 	}
 
 	public InventoryData getInventory(Player player) {

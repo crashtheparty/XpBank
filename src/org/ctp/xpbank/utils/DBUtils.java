@@ -17,5 +17,5 @@ public class DBUtils {
 		XpTable table = XpBank.getDB().getTable(XpTable.class);
 		table.setExp(uuid, xp);
 	}
-	
+
 }

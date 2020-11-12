@@ -10,11 +10,14 @@ import org.ctp.crashapi.config.yaml.YamlConfigBackup;
 import org.ctp.crashapi.db.BackupDB;
 import org.ctp.crashapi.item.ItemSerialization;
 import org.ctp.xpbank.XpBank;
+import org.ctp.xpbank.utils.Configurations;
 
 public class MainConfiguration extends Configuration {
 
 	public MainConfiguration(CrashAPIPlugin plugin, File dataFolder, BackupDB backup) {
 		super(plugin, new File(dataFolder + "/config.yml"), backup, new String[] { "Xp Bank", "Plugin by", "crashtheparty" });
+
+		migrateVersion();
 	}
 
 	@Override
@@ -22,7 +25,7 @@ public class MainConfiguration extends Configuration {
 
 	@Override
 	public void setDefaults() {
-		if (XpBank.getPlugin().isInitializing()) getChat().sendInfo("Loading default config...");
+		if (Configurations.isInitializing()) getChat().sendInfo("Initializing default config...");
 
 		YamlConfigBackup config = getConfig();
 
@@ -37,10 +40,10 @@ public class MainConfiguration extends Configuration {
 		config.addDefault("language", "en_us", new String[] { "Default language for the language file" });
 		config.addDefault("language_file", "language.yml", new String[] { "Default language file name" });
 		config.addDefault("use_comments", true, new String[] { "See helpful comments in this file" });
-		
-		config.saveConfig();
 
-		if (XpBank.getPlugin().isInitializing()) getChat().sendInfo("Default config initialized!");
+		config.writeDefaults();
+
+		if (Configurations.isInitializing()) getChat().sendInfo("Default config initialized!");
 	}
 
 }
